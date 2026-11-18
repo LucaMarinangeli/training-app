@@ -1468,7 +1468,7 @@ $('#view').addEventListener('click',e=>{
   else if(act==='wk-new'){
     confirmEdit();let n=0,name;do{name='Nuovo allenamento'+'\u200b'.repeat(n);n++}while(SEQ.includes(name));
     if(!S.names)S.names={};S.names[name]='Nuovo allenamento';applyNames();
-    S.extra=(S.extra||[]).concat(name);{const tg=(schOpen&&S.schede.some(x=>x.id===schOpen))?schOpen:(S.schede[0]?S.schede[0].id:'');if(tg){S.sw[tg]=(S.sw[tg]||[]).concat(name);if(!schOpen||schOpen==='__w')schOpen=tg}else{schOpen='__w';wkOnly=name}}S.plan[name]=[];PLAN[name]=S.plan[name];SEQ.push(name);
+    S.extra=(S.extra||[]).concat(name);{const tg=(schOpen&&S.schede.some(x=>x.id===schOpen))?schOpen:'';if(tg){S.sw[tg]=(S.sw[tg]||[]).concat(name);if(!schOpen||schOpen==='__w')schOpen=tg}else{schOpen='__w';wkOnly=name}}S.plan[name]=[];PLAN[name]=S.plan[name];SEQ.push(name);
     editSess=name;renameTo=null;editDirty=true;planOpen=name;render();
     setTimeout(()=>{const r=document.querySelector('[data-rn]');if(r){r.scrollIntoView({block:'center'});r.focus();r.select()}},60);
   }
