@@ -1030,21 +1030,11 @@ function vHist(){
   h+='<h2 class="sec">Progressione corsa</h2><section class="card"><div class="eyebrow">Ritmo medio (/km)</div>'+(rp.length?lineSvg(rp.map(e=>({d:e.d,v:-(e.run.min/e.run.km)})),paceF,'Ritmo nel tempo'):'<p class="mut" style="margin:6px 0 12px">Nessuna corsa con km e tempo registrati.</p>')
    +'<div class="tw" style="margin-top:12px"><table><tr><th>Giorno</th><th>Ritmo</th><th>Km</th><th>Durata</th></tr>'
    +runs.map(e=>'<tr><td>'+dshort(e.d)+'</td><td>'+esc(e.run.pace||'—')+'</td><td>'+(e.run.km||'—')+'</td><td>'+e.run.min+' min</td></tr>').join('')+'</table></div></section>';
-  h+='<h2 class="sec">Esporta risultati</h2><section class="card"><div style="display:flex;gap:10px"><button class="btn pri" style="flex:1" data-act="exp-csv">Esporta CSV</button></div>'
-   +'<div class="eyebrow" style="margin-top:16px">Backup automatico su GitHub</div>'
+  h+='<h2 class="sec">Backup</h2><section class="card"><div class="eyebrow">Backup automatico su GitHub</div>'
    +(ghTok()?'<div id="ghst" class="meta" style="margin:6px 0">'+esc(ghSt||'Attivo')+'</div><div style="display:flex;gap:10px"><button class="btn" style="flex:1" data-act="gh-now">Salva ora</button><button class="btn" style="flex:1" data-act="gh-del">Rimuovi</button></div>'
      :'<div class="meta">Incolla il token GitHub per salvare il CSV a ogni modifica</div><div style="display:flex;gap:10px"><input class="in" id="ghtok" type="password" autocomplete="off" placeholder="Token" style="flex:1;height:44px;font-size:15px"><button class="btn" data-act="gh-save">Salva</button></div>')
    +'</section>';
   return h;
-}
-async function saveFile(name,text,mime){
-  try{
-    const dl=(window.claude&&claude.use)?await claude.use('downloads'):null;
-    if(dl){await dl.save({filename:name,data:new Blob([text],{type:mime})});toast('File pronto');return}
-  }catch(e){if(e&&(e.code==='declined'||e.code==='not_granted'||e.code==='cancelled')){return}}
-  try{
-    const u=URL.createObjectURL(new Blob([text],{type:mime}));const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);toast('File scaricato');
-  }catch(e){toast('Export non disponibile qui')}
 }
 function buildCsv(){
   const q=v=>{v=v==null?'':String(v);return /[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
@@ -1057,7 +1047,6 @@ function buildCsv(){
   ((S.body&&S.body.w)||[]).slice().sort((a,b)=>a.d<b.d?-1:1).forEach(w=>rows.push(['Peso',w.d,'','','','','','','','',w.kg,'']));
   return '\ufeff'+rows.map(r=>r.map(q).join(';')).join('\r\n');
 }
-function exportCsv(){saveFile('allenamenti-'+dstr()+'.csv',buildCsv(),'text/csv;charset=utf-8')}
 const ghTok=()=>{try{return localStorage.getItem('training.gh.token')||''}catch(e){return ''}};
 function ghMsg(m){ghSt=m;const e=document.getElementById('ghst');if(e)e.textContent=m}
 function scheduleGh(){if(!ghTok())return;clearTimeout(ghT);ghT=setTimeout(ghPush,8000)}
@@ -1344,7 +1333,6 @@ $('#view').addEventListener('click',e=>{
     if(!(kg>20&&kg<400)){toast('Scrivi il peso in kg');return}
     const bd=B();bd.w=bd.w.filter(x=>x.d!==d);bd.w.push({d,kg});save();render();toast('Peso salvato');
   }
-  else if(act==='exp-csv'){exportCsv()}
   else if(act==='gh-save'){const v=($('#ghtok').value||'').trim();if(v.length<20){toast('Token non valido');return}try{localStorage.setItem('training.gh.token',v)}catch(e){toast('Non riesco a salvare');return}ghSt='Invio in corso…';render();ghPush()}
   else if(act==='gh-now'){ghMsg('Invio in corso…');ghPush()}
   else if(act==='gh-del'){try{localStorage.removeItem('training.gh.token')}catch(e){}ghSt='';render()}
