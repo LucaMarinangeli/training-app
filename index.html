@@ -62,7 +62,7 @@ h2.sec{font:600 13px var(--body);letter-spacing:.14em;text-transform:uppercase;c
 .seq .chip{padding:10px 4px;text-align:center;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .seq.fit{display:flex!important;flex-wrap:wrap}
 .seq.fit .chip{padding:10px 16px;overflow:visible;text-overflow:clip}
-.chip.nxt{border-color:#e4ff1a;box-shadow:0 0 0 1px #e4ff1a,0 0 10px rgba(228,255,26,.6)}
+.chip.nxt{border-color:#e4ff1a;box-shadow:0 0 0 1px #e4ff1a}
 .chip .dt{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue);margin-left:7px;vertical-align:middle}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stat{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
@@ -1009,7 +1009,7 @@ function vSess(){
   const a=A();
   const F=x=>{const i=SEQ.indexOf(x);return'<button class="chip'+(i===S.seq?' cur':'')+(i===S.nxt?' nxt':'')+'" data-act="setseq" data-i="'+i+'">'+disp(x)+'</button>'};
   const cl=curList(),oth=SEQ.filter(x=>x!=='Pausa'&&!cl.includes(x));
-  if(!a)return'<section class="hero"><div class="eyebrow">Nessuna seduta attiva</div><h1>'+disp(SEQ[S.seq])+estSpan(SEQ[S.seq])+'</h1><p>'+esc(sessSub(SEQ[S.seq]))+'</p>'+whenHtml()+'<button class="go" data-act="start">INIZIA</button></section>'+'<h2 class="sec">Allenamenti della scheda</h2><div class="seq">'+cl.map(F).join('')+'</div>'+(oth.length?'<h2 class="sec">Altri allenamenti</h2><div class="seq">'+oth.map(F).join('')+'</div>':'');
+  if(!a)return'<section class="hero"><h1>'+disp(SEQ[S.seq])+estSpan(SEQ[S.seq])+'</h1><p>'+esc(sessSub(SEQ[S.seq]))+'</p>'+whenHtml()+'<button class="go" data-act="start">INIZIA</button></section>'+'<h2 class="sec">Allenamenti della scheda</h2><div class="seq">'+cl.map(F).join('')+'</div>'+(oth.length?'<h2 class="sec">Altri allenamenti</h2><div class="seq">'+oth.map(F).join('')+'</div>':'');
   let tot=0,dn=0;
   a.items.forEach(x=>{if(x.sets&&x.sets.length){tot+=x.sets.length;dn+=x.sets.filter(s=>s.done).length}else{tot++;if(x.done)dn++}});
   const st=new Date(a.start);
