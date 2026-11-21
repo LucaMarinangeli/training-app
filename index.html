@@ -878,8 +878,7 @@ function calDetail(){
     h+='</div>';
   });
   if(!es.length&&calSel<dstr()){
-    const isR=(S.rest||[]).includes(calSel);
-    h+='<p class="mut" style="margin:4px 0 8px">'+(isR?'Giorno di riposo.':'Nessun allenamento.')+'</p><button class="btn" data-act="calday" data-d="'+calSel+'">'+(isR?'Togli il riposo':'Segna come riposo')+'</button>';
+    h+='<p class="mut" style="margin:4px 0 8px">Nessun allenamento.</p>';
   }
   return h+'</div>';
 }
@@ -907,7 +906,7 @@ function vCal(){
     let cls='cd';
     const did=trained.has(ds),past=first&&ds>=first&&ds<=today&&!did;
     if(did){cls+=' ok';nT++}
-    else if(past&&ds<today){if(rest.has(ds))cls+=' rs';else{nS++}}
+    else if(past&&ds<today){nS++}
     if(ds===today)cls+=' tdy';
     if(ds===calSel)cls+=' sel';
     g+=ds<=today?'<button class="'+cls+'" data-act="calview" data-d="'+ds+'" aria-label="Giorno '+d+'">'+d+(inis[ds]?'<i class="ci">'+inis[ds].join(' ')+'</i>':'')+'</button>':'<span class="'+cls+'">'+d+'</span>';
@@ -915,7 +914,7 @@ function vCal(){
   const title=base.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
   return'<h2 class="sec">Calendario</h2><section class="card"><div class="calh"><button data-act="calprev" aria-label="Mese precedente">‹</button><b>'+esc(title)+'</b><button data-act="calnext" aria-label="Mese successivo"'+(calOff>=0?' disabled':'')+'>›</button></div>'
    +'<div class="cal">'+g+'</div>'+calDetail()
-   +'<div class="leg"><span><i style="background:var(--work)"></i>Allenato '+nT+'</span><span><i style="border:1px dashed var(--mut)"></i>Riposo</span></div>'
+   +'<div class="leg"><span><i style="background:var(--work)"></i>Allenato '+nT+'</span></div>'
    +'</section>';
 }
 const WXN={0:'Sereno',1:'Quasi sereno',2:'Poco nuvoloso',3:'Nuvoloso',45:'Nebbia',48:'Nebbia',51:'Pioggerella',53:'Pioggerella',55:'Pioggerella',61:'Pioggia',63:'Pioggia',65:'Pioggia forte',71:'Neve',73:'Neve',75:'Neve',80:'Rovesci',81:'Rovesci',82:'Rovesci forti',95:'Temporale',96:'Temporale',99:'Temporale'};
@@ -1124,8 +1123,8 @@ function vHist(){
   const runs=logs.filter(e=>e.run);
   const rp=[...runs].filter(e=>e.run.km>0&&e.run.min>0).sort((x,y)=>x.ts-y.ts);
   const paceF=v=>{v=-v;let m=Math.floor(v),s=Math.round((v-m)*60);if(s===60){m++;s=0}return m+'′'+pad(s)+'″'};
-  h+='<h2 class="sec">Progressione corsa</h2><section class="card"><div class="eyebrow">Ritmo medio (/km)</div>'+(rp.length?lineSvg(rp.map(e=>({d:e.d,v:-(e.run.min/e.run.km)})),paceF,'Ritmo nel tempo'):'<p class="mut" style="margin:6px 0 12px">Nessuna corsa con km e tempo registrati.</p>')
-   +'<div class="tw" style="margin-top:12px"><table><tr><th>Giorno</th><th>Ritmo</th><th>Km</th><th>Durata</th></tr>'
+  h+='<h2 class="sec">Progressione corsa</h2><section class="card">'
+   +'<div class="tw"><table><tr><th>Giorno</th><th>Ritmo</th><th>Km</th><th>Durata</th></tr>'
    +runs.map(e=>'<tr><td>'+dshort(e.d)+'</td><td>'+esc(e.run.pace||'—')+'</td><td>'+(e.run.km||'—')+'</td><td>'+e.run.min+' min</td></tr>').join('')+'</table></div></section>';
   return h;
 }
