@@ -807,14 +807,14 @@ function vBody(){
   if(ws.length)h+='<div class="tw" style="margin-top:10px"><table><tr><th>Data</th><th>Kg</th><th></th></tr>'
     +[...ws].reverse().slice(0,10).map(x=>'<tr><td>'+esc(dshort(x.d))+'</td><td>'+r1(x.kg)+'</td><td style="text-align:right"><button class="ib" style="width:34px;height:34px;display:inline-grid" data-act="wdel" data-d="'+x.d+'" aria-label="Elimina">'+ICT+'</button></td></tr>').join('')+'</table></div>';
   h+='</section><section class="card" style="margin-top:12px"><div class="wf wf1"><input class="in" id="bw" inputmode="decimal" placeholder="Peso di oggi (kg)" aria-label="Peso di oggi in kg"><button class="btn pri" data-act="wadd">Salva</button></div></section>';
-  h+='<h2 class="sec">Backup</h2><section class="card"><div class="eyebrow">Backup automatico su GitHub</div>'
-   +(ghTok()?'<div id="ghst" class="meta" style="margin:6px 0">'+esc(ghSt||'Attivo')+'</div><div style="display:flex;gap:10px"><button class="btn" style="flex:1" data-act="gh-now">Salva ora</button><button class="btn" style="flex:1" data-act="gh-del">Rimuovi</button></div>'
-     :'<div class="meta">Incolla il token GitHub per salvare il CSV a ogni modifica</div><div style="display:flex;gap:10px"><input class="in" id="ghtok" type="password" autocomplete="off" placeholder="Token" style="flex:1;height:44px;font-size:15px"><button class="btn" data-act="gh-save">Salva</button></div>')
-   +'</section>';
   const vv=S.vol||{w:100,r:100};
   h+='<h2 class="sec">Impostazioni</h2><section class="card"><div class="mu">Impostazioni audio</div>'
    +'<label class="vol">Volume<input type="range" min="0" max="100" step="5" value="'+(vv.w??100)+'" data-vol="w"><b>'+(vv.w??100)+'%</b></label>'
    +'<button class="btn" data-act="voltest" style="width:100%;margin-top:8px">Prova la voce</button></section>';
+  h+='<h2 class="sec">Backup</h2><section class="card"><div class="eyebrow">Backup automatico su GitHub</div>'
+   +(ghTok()?'<div id="ghst" class="meta" style="margin:6px 0">'+esc(ghSt||'Attivo')+'</div><div style="display:flex;gap:10px"><button class="btn" style="flex:1" data-act="gh-now">Salva ora</button><button class="btn" style="flex:1" data-act="gh-del">Rimuovi</button></div>'
+     :'<div class="meta">Incolla il token GitHub per salvare il CSV a ogni modifica</div><div style="display:flex;gap:10px"><input class="in" id="ghtok" type="password" autocomplete="off" placeholder="Token" style="flex:1;height:44px;font-size:15px"><button class="btn" data-act="gh-save">Salva</button></div>')
+   +'</section>';
 
   return h;
 }
@@ -1721,5 +1721,4 @@ initDb();
 loadWx();setInterval(loadWx,1800000);
 })();
 </script>
-<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
-</body></html>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script></body></html>
