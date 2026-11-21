@@ -914,7 +914,6 @@ function vCal(){
   const title=base.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
   return'<h2 class="sec">Calendario</h2><section class="card"><div class="calh"><button data-act="calprev" aria-label="Mese precedente">‹</button><b>'+esc(title)+'</b><button data-act="calnext" aria-label="Mese successivo"'+(calOff>=0?' disabled':'')+'>›</button></div>'
    +'<div class="cal">'+g+'</div>'+calDetail()
-   +'<div class="leg"><span><i style="background:var(--work)"></i>Allenato '+nT+'</span></div>'
    +'</section>';
 }
 const WXN={0:'Sereno',1:'Quasi sereno',2:'Poco nuvoloso',3:'Nuvoloso',45:'Nebbia',48:'Nebbia',51:'Pioggerella',53:'Pioggerella',55:'Pioggerella',61:'Pioggia',63:'Pioggia',65:'Pioggia forte',71:'Neve',73:'Neve',75:'Neve',80:'Rovesci',81:'Rovesci',82:'Rovesci forti',95:'Temporale',96:'Temporale',99:'Temporale'};
@@ -938,6 +937,11 @@ async function loadWx(){try{const r=await fetch('https://api.open-meteo.com/v1/f
   const k=Math.max(0,H.time.indexOf(c.time.slice(0,13)+':00')),hr=[];for(let i=k;i<k+6&&i<H.time.length;i++)hr.push({t:Math.round(i===k?c.temperature_2m:H.temperature_2m[i]),c:i===k?c.weather_code:H.weather_code[i],d:i===k?c.is_day:H.is_day[i],h:H.time[i].slice(11,13)});
   const dy=D.time.slice(0,7).map((t,i)=>({n:new Date(t+'T12:00').toLocaleDateString('it-IT',{weekday:'short'}).replace('.',''),c:D.weather_code[i],hi:Math.round(D.temperature_2m_max[i]),lo:Math.round(D.temperature_2m_min[i])}));
   WX={t:Math.round(c.temperature_2m),f:Math.round(c.apparent_temperature),c:c.weather_code,d:c.is_day,w:c.weather_code<=1?(c.is_day?'Soleggiato':'Sereno'):(WXN[c.weather_code]||'Roma'),v:Math.round(c.wind_speed_10m),p:H.precipitation_probability[k]||0,s:(D.sunset&&D.sunset[0]||'').slice(11,16),hr,dy};wxPaint()}catch(e){}}
+let TR=null;
+const trT=()=>TR?TR.m+' min':'Traffico';
+const trS=()=>'Forum Sporting Club'+(TR?' \u00b7 '+TR.k.toFixed(1).replace('.',',')+' km':'');
+function trPaint(){const b=$('#trb'),x=$('#trs');if(b)b.textContent=trT();if(x)x.textContent=trS()}
+async function loadTr(){try{const pos=await new Promise((ok,ko)=>navigator.geolocation.getCurrentPosition(ok,ko,{timeout:15000,maximumAge:120000}));const r=await fetch('https://router.project-osrm.org/route/v1/driving/'+pos.coords.longitude+','+pos.coords.latitude+';12.3836269,41.8902697?overview=false');if(!r.ok)return;const j=await r.json(),t=j&&j.routes&&j.routes[0];if(!t)return;TR={m:Math.max(1,Math.round(t.duration/60)),k:t.distance/1000};trPaint()}catch(e){}}
 function vHome(){
   const a=A(),s=SEQ[S.nxt!=null?S.nxt:S.seq];
   const wkAgo=Date.now()-7*864e5;
@@ -947,10 +951,11 @@ function vHome(){
   let h='<section class="hero"><div class="eyebrow">'+(a?'Seduta in corso':'Prossimo allenamento')+'</div>'
    +'<h1'+((a?a.s:s).length>12?' style="font-size:'+Math.max(20,Math.floor(440/(a?a.s:s).length))+'px;line-height:44px"':'')+'>'+disp(a?a.s:s)+estSpan(a?a.s:s)+'</h1>'+(sessSub(a?a.s:s)?'<p>'+esc(sessSub(a?a.s:s))+'</p>':'<p>&nbsp;</p>')
    +(a?'':whenHtml())+'<button class="go" data-act="'+(a?'resume':'start-nxt')+'">'+(a?'RIPRENDI':s==='Pausa'?'SEGNA PAUSA':'INIZIA')+'</button></section>';
-  h+='<div class="stats lnk" style="grid-template-columns:1fr">'
-   +'<a class="stat" href="https://www.google.com/maps/dir/?api=1&destination=Forum+Sporting+Club+Roma&travelmode=driving" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"/></svg><b>Traffico</b><span>Forum Sporting Club</span></a>'
+  const trh='<div class="stats lnk" style="grid-template-columns:1fr">'
+   +'<a class="stat" href="https://www.google.com/maps/dir/?api=1&destination=Forum+Sporting+Club+Roma&travelmode=driving" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"/></svg><b id="trb">'+trT()+'</b><span id="trs">'+trS()+'</span></a>'
    +'</div>';
   h+='<section class="card wxc'+(WX?' on':'')+'" id="wxc">'+wxHtml()+'</section>';
+  h+=trh;
   h+=weekSummary();
   return h;
 }
@@ -1739,7 +1744,7 @@ setSync('off');
 render();
 initDict();
 initDb();
-loadWx();setInterval(loadWx,1800000);
+loadWx();setInterval(loadWx,1800000);loadTr();setInterval(loadTr,600000);
 })();
 </script>
 <script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script></body></html>
