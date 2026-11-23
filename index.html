@@ -38,7 +38,7 @@ header.top{display:none!important;align-items:baseline;justify-content:space-bet
 .brand{font:700 30px/1 var(--disp);letter-spacing:.14em}
 #today{font-size:13px;color:var(--mut);text-transform:capitalize;text-align:right;min-width:0}
 #sync{display:block;font-size:11px;letter-spacing:.04em;margin-top:2px}
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:42;background:var(--bg);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:4px max(8px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:42;background:var(--bg);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding:4px max(8px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
 nav.tabs button{height:50px;border:0;background:none;color:var(--mut);display:grid;place-items:center;border-radius:12px}
 nav.tabs button svg{width:28px;height:28px;stroke-width:1.8}
 nav.tabs button.on{color:var(--txt)}
@@ -48,7 +48,7 @@ h2.sec{font:600 13px var(--body);letter-spacing:.14em;text-transform:uppercase;c
 
 .hero{background:linear-gradient(160deg,#171d24,#0f1318);border:1px solid var(--line);border-radius:20px;padding:22px 20px 20px}
 .eyebrow{font:600 12px var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--mut)}
-.hero h1{height:44px;overflow:hidden;font:700 42px/1 var(--disp);letter-spacing:.02em;margin:8px 0 6px;text-transform:uppercase;white-space:nowrap}
+.hero h1{height:64px;overflow:hidden;font:700 64px/1 var(--disp);letter-spacing:.02em;margin:8px 0 6px;text-transform:uppercase;white-space:nowrap}
 .hero h1 .est{font-size:15px;margin-left:8px}
 .hero p{margin:0 0 20px;color:var(--mut);height:21px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .go{width:100%;min-height:72px;border:0;border-radius:16px;background:var(--steel);color:#0a0c0f;font:700 30px var(--disp);letter-spacing:.2em}
@@ -204,11 +204,11 @@ a{color:var(--blue)}
 .calh b{font:600 20px var(--disp);letter-spacing:.06em;text-transform:uppercase}
 .calh button{width:44px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);font-size:20px}
 .calh button:disabled{opacity:.3}
-.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 2px}
 .cw{text-align:center;font:600 11px var(--body);color:var(--mut);letter-spacing:.1em}
-.cd{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--mut);font:600 15px var(--body);display:grid;place-items:center;padding:0;min-width:0}
+.cd{min-height:56px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--mut);font:600 15px var(--body);display:grid;place-items:center;padding:0;min-width:0}
 .vol{display:grid;grid-template-columns:70px 1fr 48px;align-items:center;gap:10px;margin:10px 0;font:600 14px var(--body)}.vol input{width:100%;accent-color:var(--blue)}.vol b{text-align:right;font-size:13px}
-.cd .ci{display:block;font:700 9px/1 var(--body);font-style:normal;letter-spacing:.02em;margin-top:2px;opacity:.85}
+.cd .ci{display:block;font:700 8px/1.1 var(--body);font-style:normal;letter-spacing:0;margin-top:2px;opacity:.9;max-width:100%;overflow-wrap:anywhere;text-align:center}
 .cd.ok{background:var(--work);border-color:var(--work);color:#04170c}
 .cd.ko{background:var(--rest);border-color:var(--rest);color:#fff}
 .cd.rs{background:var(--surf);border-style:dashed}
@@ -328,6 +328,7 @@ summary,.schc,.chip,.wrow{-webkit-user-select:none;user-select:none;-webkit-touc
   <button data-v="hist" aria-label="Storico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></button>
   <button data-v="plan" aria-label="Scheda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3"/><path d="M9 11h6M9 15h6"/></svg></button>
   <button data-v="body" aria-label="Corpo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2.5"/><path d="M12 8v6"/><path d="M6 10l6-2 6 2"/><path d="M9 21l3-7 3 7"/></svg></button>
+  <button data-v="set" aria-label="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
 </nav>
 <button id="ttop" hidden></button>
 <main id="view"></main>
@@ -814,6 +815,17 @@ function barsHtml(){
     +bar('Carboidrati',tot.c,num(t.c),'g','var(--c-spalle)')
     +bar('Grassi',tot.f,num(t.f),'g','var(--c-dorso)');
 }
+function vSet(){
+  let h='';
+  const vv=S.vol||{w:100,r:100};
+  h+='<h2 class="sec">Impostazioni</h2><section class="card"><div class="mu">Impostazioni audio</div>'
+   +'<label class="vol">Volume<input type="range" min="0" max="100" step="5" value="'+(vv.w??100)+'" data-vol="w"><b>'+(vv.w??100)+'%</b></label>'
+   +'<button class="btn" data-act="voltest" style="width:100%;margin-top:8px">Prova la voce</button></section>';
+
+
+  h+='<h2 class="sec">Dati</h2><section class="card"><div class="meta" style="margin-bottom:8px">Tutti i dati dell\'app in un file CSV</div><div style="display:flex;gap:10px"><button class="btn" style="flex:1" data-act="csv-exp">Esporta CSV</button><button class="btn" style="flex:1" data-act="csv-imp">Importa CSV</button></div></section>';
+  return h;
+}
 function vBody(){
   const b=B(),ws=[...b.w].sort((x,y)=>x.d<y.d?-1:x.d>y.d?1:0);
   let h='<h2 class="sec">Tracciamento peso</h2><section class="card">';
@@ -826,13 +838,6 @@ function vBody(){
   if(ws.length)h+='<div class="tw" style="margin-top:10px"><table><tr><th>Data</th><th>Kg</th><th></th></tr>'
     +[...ws].reverse().slice(0,10).map(x=>'<tr><td>'+esc(dshort(x.d))+'</td><td>'+r1(x.kg)+'</td><td style="text-align:right"><button class="ib" style="width:34px;height:34px;display:inline-grid" data-act="wdel" data-d="'+x.d+'" aria-label="Elimina">'+ICT+'</button></td></tr>').join('')+'</table></div>';
   h+='</section><section class="card" style="margin-top:12px"><div class="wf wf1"><input class="in" id="bw" inputmode="decimal" placeholder="Peso di oggi (kg)" aria-label="Peso di oggi in kg"><button class="btn pri" data-act="wadd">Salva</button></div></section>';
-  const vv=S.vol||{w:100,r:100};
-  h+='<h2 class="sec">Impostazioni</h2><section class="card"><div class="mu">Impostazioni audio</div>'
-   +'<label class="vol">Volume<input type="range" min="0" max="100" step="5" value="'+(vv.w??100)+'" data-vol="w"><b>'+(vv.w??100)+'%</b></label>'
-   +'<button class="btn" data-act="voltest" style="width:100%;margin-top:8px">Prova la voce</button></section>';
-
-
-  h+='<h2 class="sec">Dati</h2><section class="card"><div class="meta" style="margin-bottom:8px">Tutti i dati dell\'app in un file CSV</div><div style="display:flex;gap:10px"><button class="btn" style="flex:1" data-act="csv-exp">Esporta CSV</button><button class="btn" style="flex:1" data-act="csv-imp">Importa CSV</button></div></section>';
   return h;
 }
 
@@ -910,7 +915,7 @@ function vCal(){
   const y=base.getFullYear(),m=base.getMonth();
   const days=new Date(y,m+1,0).getDate(),lead=(base.getDay()+6)%7;
   const trained=new Set(S.log.filter(e=>e.s!=='Pausa').map(e=>e.d));
-  const inis={};S.log.forEach(e=>{if(e.s==='Pausa')return;const i=ini(e.s);(inis[e.d]=inis[e.d]||[]);if(!inis[e.d].includes(i))inis[e.d].push(i)});
+  const inis={};S.log.forEach(e=>{if(e.s==='Pausa')return;const i=String(NAMES[e.s]||e.s);(inis[e.d]=inis[e.d]||[]);if(!inis[e.d].includes(i))inis[e.d].push(i)});
   const first=S.log.reduce((a,e)=>(a&&a<e.d)?a:e.d,'');
   const today=dstr(now),rest=new Set(S.rest||[]);
   let g='',nT=0,nS=0;
@@ -924,7 +929,7 @@ function vCal(){
     else if(past&&ds<today){nS++}
     if(ds===today)cls+=' tdy';
     if(ds===calSel)cls+=' sel';
-    g+=ds<=today?'<button class="'+cls+'" data-act="calview" data-d="'+ds+'" aria-label="Giorno '+d+'">'+d+(inis[ds]?'<i class="ci">'+inis[ds].join(' ')+'</i>':'')+'</button>':'<span class="'+cls+'">'+d+'</span>';
+    g+=ds<=today?'<button class="'+cls+'" data-act="calview" data-d="'+ds+'" aria-label="Giorno '+d+'">'+d+(inis[ds]?'<i class="ci">'+inis[ds].map(esc).join('<br>')+'</i>':'')+'</button>':'<span class="'+cls+'">'+d+'</span>';
   }
   const title=base.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
   return'<h2 class="sec">Calendario</h2><section class="card"><div class="calh"><button data-act="calprev" aria-label="Mese precedente">‹</button><b>'+esc(title)+'</b><button data-act="calnext" aria-label="Mese successivo"'+(calOff>=0?' disabled':'')+'>›</button></div>'
@@ -964,8 +969,8 @@ function vHome(){
   const wk=S.log.filter(e=>e.s!=='Pausa'&&e.ts>wkAgo).length;
   const lastE=[...S.log].reverse().find(e=>e.s!=='Pausa');
   const doneIdx=lastE?SEQ.indexOf(lastE.s):-1;
-  let h='<section class="hero"><div class="eyebrow">'+(a?'Seduta in corso':'Prossima sessione')+'</div>'
-   +'<h1'+((a?a.s:s).length>12?' style="font-size:'+Math.max(20,Math.floor(440/(a?a.s:s).length))+'px;line-height:44px"':'')+'>'+disp(a?a.s:s)+estSpan(a?a.s:s)+'</h1>'+(sessSub(a?a.s:s)?'<p>'+esc(sessSub(a?a.s:s))+'</p>':'<p>&nbsp;</p>')
+  let h='<h2 class="sec">'+(a?'Seduta in corso':'Prossima sessione')+'</h2><section class="hero">'
+   +'<h1 style="font-size:'+Math.min(64,Math.floor(500/String(NAMES[a?a.s:s]||(a?a.s:s)).length))+'px;line-height:64px">'+disp(a?a.s:s)+estSpan(a?a.s:s)+'</h1>'+(sessSub(a?a.s:s)?'<p>'+esc(sessSub(a?a.s:s))+'</p>':'<p>&nbsp;</p>')
    +(a?'':whenHtml())+'<button class="go" data-act="'+(a?'resume':'start-nxt')+'">'+(a?'RIPRENDI':s==='Pausa'?'SEGNA PAUSA':'INIZIA')+'</button></section>';
   const trh='<div class="stats lnk" style="grid-template-columns:1fr">'
    +'<a class="stat" href="https://www.google.com/maps/dir/?api=1&destination=Forum+Sporting+Club+Roma&travelmode=driving" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"/></svg><b id="trb">'+trT()+'</b><span id="trs">'+trS()+'</span></a>'
@@ -1049,9 +1054,9 @@ function atlCard(it,i){
 }
 function vSess(){
   const a=A();
-  const F=x=>{const i=SEQ.indexOf(x);return'<button class="chip'+(i===S.seq?' cur':'')+(i===S.nxt?' nxt':'')+'" data-act="setseq" data-i="'+i+'">'+disp(x)+'</button>'};
+  const F=x=>{const i=SEQ.indexOf(x);return'<button class="chip'+(i===(S.nxt!=null?S.nxt:S.seq)?' cur':'')+(i===S.nxt?' nxt':'')+'" data-act="setseq" data-i="'+i+'">'+disp(x)+'</button>'};
   const cl=curList(),oth=SEQ.filter(x=>x!=='Pausa'&&!cl.includes(x));
-  if(!a)return'<section class="hero"><h1>'+disp(SEQ[S.seq])+estSpan(SEQ[S.seq])+'</h1><p>'+esc(sessSub(SEQ[S.seq]))+'</p>'+whenHtml()+'<button class="go" data-act="start">INIZIA</button></section>'+'<h2 class="sec">Sessioni della scheda</h2><div class="seq">'+cl.map(F).join('')+'</div>'+(oth.length?'<h2 class="sec">Altre sessioni</h2><div class="seq">'+oth.map(F).join('')+'</div>':'');
+  if(!a)return'<h2 class="sec">Prossima sessione</h2><section class="hero"><h1 style="font-size:'+Math.min(64,Math.floor(500/String(NAMES[SEQ[(S.nxt!=null?S.nxt:S.seq)]]||SEQ[(S.nxt!=null?S.nxt:S.seq)]).length))+'px;line-height:64px">'+disp(SEQ[(S.nxt!=null?S.nxt:S.seq)])+estSpan(SEQ[(S.nxt!=null?S.nxt:S.seq)])+'</h1>'+(sessSub(SEQ[(S.nxt!=null?S.nxt:S.seq)])?'<p>'+esc(sessSub(SEQ[(S.nxt!=null?S.nxt:S.seq)]))+'</p>':'<p>&nbsp;</p>')+whenHtml()+'<button class="go" data-act="start-nxt">'+(SEQ[(S.nxt!=null?S.nxt:S.seq)]==='Pausa'?'SEGNA PAUSA':'INIZIA')+'</button></section>'+'<h2 class="sec">Sessioni della scheda</h2><div class="seq">'+cl.map(F).join('')+'</div>'+(oth.length?'<h2 class="sec">Altre sessioni</h2><div class="seq">'+oth.map(F).join('')+'</div>':'');
   let tot=0,dn=0;
   a.items.forEach(x=>{if(x.sets&&x.sets.length){tot+=x.sets.length;dn+=x.sets.filter(s=>s.done).length}else{tot++;if(x.done)dn++}});
   const st=new Date(a.start);
@@ -1360,8 +1365,8 @@ function vPlan(){
   if(cur.id==='__w')return h+'<div style="height:140px"></div>';
   if(!schEd)h+='<button class="btn" data-act="wk-new" style="width:100%;margin:12px 0 18px">+ Nuova sessione</button>';
   if(schEd){h+='<button class="btn" data-act="wk-new" style="width:100%;margin:12px 0 18px">+ Nuova sessione</button>';
-  const o=sortNames(SEQ.filter(s=>s!=='Pausa'));
-    h+='<h2 class="sec">Sessioni esistenti</h2><div class="seq fit">'+o.map(s=>'<button class="chip" data-act="wk-add" data-s="'+esc(s)+'">'+disp(s)+'</button>').join('')+'</div>'}
+  const o=sortNames(SEQ.filter(s=>s!=='Pausa'&&!inSch(s,cur.id)));
+    if(o.length)h+='<h2 class="sec">Sessioni esistenti</h2><div class="seq fit">'+o.map(s=>'<button class="chip" data-act="wk-add" data-s="'+esc(s)+'">'+disp(s)+'</button>').join('')+'</div>'}
   return h+'<div style="height:140px"></div>';
 }
 /* ======================= SPOTIFY (connettore) ======================= */
@@ -1456,7 +1461,7 @@ $('#view').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='sp-
 function render(){
   if(S.seq>=SEQ.length)S.seq=0;
   const y=window.scrollY;
-  $('#view').innerHTML=({home:vHome,sess:vSess,hist:vHist,plan:vPlan,body:vBody,music:vMusic})[view]();
+  $('#view').innerHTML=({home:vHome,sess:vSess,hist:vHist,plan:vPlan,body:vBody,set:vSet,music:vMusic})[view]();
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
   $('#timer').hidden=view!=='sess';
   updateFab();T.draw();window.scrollTo(0,y);
@@ -1623,7 +1628,7 @@ $('#view').addEventListener('click',e=>{
   else if(act==='start-nxt'){S.seq=(S.nxt!=null?S.nxt:S.seq);startSession()}
   else if(act==='when'){pastDay=b.dataset.v==='1';render()}
   else if(act==='resume'){view='sess';render();scrollTo(0,0)}
-  else if(act==='setseq'){S.seq=i;save();render()}
+  else if(act==='setseq'){S.seq=S.nxt=i;save();render()}
   else if(act==='mic'){startDict(i)}
   else if(act==='ck'&&a){
     const it=a.items[i],s=it.sets[j];a.cur=i;ac();
@@ -1692,7 +1697,7 @@ $('#view').addEventListener('click',e=>{
   else if(act==='voltest'){say('Lavora','w');setTimeout(()=>say('Riposo','r'),1200)}
   else if(act==='sess-ed'){const s=b.dataset.s;confirmEdit();view='plan';schEd=false;addPick=false;schOpen='__w';wkOnly=s;if(PLAN[s]&&s!=='Atletica'&&!S.plan[s]){S.plan[s]=JSON.parse(JSON.stringify(PLAN[s]));PLAN[s]=S.plan[s]}editSess=s;planOpen=s;render();scrollTo(0,0)}
   else if(act==='wk-edit'){const s=b.dataset.s;confirmEdit();schEd=false;if(s!=='Corsa lunga'&&s!=='Atletica'&&PLAN[s]&&!S.plan[s]){S.plan[s]=JSON.parse(JSON.stringify(PLAN[s]));PLAN[s]=S.plan[s]}editSess=s;planOpen=s;render()}
-  else if(act==='wk-add'){const s=b.dataset.s;if(schOpen&&schOpen!=='main'&&schOpen!=='__w'){S.sw[schOpen]=(S.sw[schOpen]||[]).concat(s);planOpen=s;save()}else if(schOpen==='main'&&!inSch(s,'main')){S.sw.main.push(s);S.ord=S.ord||{};S.ord.main=members('main');planOpen=s;save()}render()}
+  else if(act==='wk-add'){const s=b.dataset.s;if(schOpen&&schOpen!=='main'&&schOpen!=='__w'){S.sw[schOpen]=(S.sw[schOpen]||[]).includes(s)?(S.sw[schOpen]||[]):(S.sw[schOpen]||[]).concat(s);planOpen=s;save()}else if(schOpen==='main'&&!inSch(s,'main')){S.sw.main.push(s);S.ord=S.ord||{};S.ord.main=members('main');planOpen=s;save()}render()}
   else if(act==='wk-rm'){const s=b.dataset.s;if(schOpen&&schOpen!=='main'&&arm('rm'+s,b,'Sicuro?')){armed=null;confirmEdit();{const L=S.sw[schOpen]||[],k=L.indexOf(s);if(k>=0)L.splice(k,1)}normSw();planOpen='';save();render()}}
   else if(act==='wk-new'){
     confirmEdit();let n=0,name;do{name='Nuovo allenamento'+'\u200b'.repeat(n);n++}while(SEQ.includes(name));
@@ -1917,5 +1922,4 @@ initDict();
 initDb();
 loadWx();setInterval(loadWx,1800000);loadTr();setInterval(loadTr,600000);
 })();
-</script>
-<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script></body></html>
+</script><script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script></body></html>
