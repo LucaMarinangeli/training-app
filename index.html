@@ -213,8 +213,8 @@ a{color:var(--blue)}
 .leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
 .cd.sel{outline:2px solid var(--blue);outline-offset:1px}
 button.cd{cursor:pointer}
-.addgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.addgrid .chip{padding:12px 2px;font-size:13px;text-align:center;white-space:nowrap}
+.seq.addgrid{display:flex!important;flex-wrap:wrap;gap:8px}
+.addgrid .chip{padding:12px 16px;font-size:13px;text-align:center;white-space:nowrap;overflow:visible;text-overflow:clip;flex:0 0 auto}
 .ent{border:1px solid var(--line);border-radius:14px;background:var(--surf2);padding:12px;margin:0 0 14px}
 .gr{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.7fr) minmax(0,1fr);gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
 .gr:last-child{border-bottom:0}
@@ -549,19 +549,20 @@ function beep(k){
   const P={work:[[988,0,.16],[1319,.2,.3]],rest:[[392,0,.55]],tick:[[740,0,.08]],done:[[784,0,.15],[988,.18,.15],[1319,.36,.4]]};
   (P[k]||[]).forEach(a=>tone(a[0],a[1],a[2]));
   try{navigator.vibrate&&navigator.vibrate(k==='work'?[180,70,180]:k==='rest'?[380]:k==='done'?[120,60,120,60,260]:[30])}catch(e){}
-  if(k==='work')setTimeout(()=>{if(T.cur())say('Lavora','w')},500);
+  if(k==='work')setTimeout(()=>{const a=A(),c=T.cur();if(c&&!(a&&(a.run||a.s==='Corsa lunga'||c.label==='Corsa'||(a.items||[]).some(x=>x.grp==='Corsa'&&x.n===c.label))))say('Lavora','w')},500);
   else if(k==='rest')setTimeout(()=>{if(T.cur())say('Riposo','r')},600);
 }
 function wake(){try{navigator.wakeLock&&navigator.wakeLock.request('screen').catch(()=>{})}catch(e){}}
 
 /* ======================= TIMER GUIDATO ======================= */
+function isRunPh(p){const a=A();return !!(a&&(a.run||a.s==='Corsa lunga'||p.label==='Corsa'||(a.items||[]).some(x=>x.grp==='Corsa'&&x.n===p.label)))}
 const T={q:[],i:-1,t0:0,paused:false,pt:0,warn:99,
   run(q){this.q=q;this.i=-1;this.next()},
   next(){
     this.i++;
     if(this.i>=this.q.length){this.q=[];this.i=-1;this.paused=false;this.draw();return}
     const p=this.q[this.i];this.t0=Date.now();this.paused=false;this.warn=99;
-    if(!p.silent)beep(p.kind==='work'?'work':'rest');this.draw();
+    if(!p.silent&&!(p.kind==='work'&&isRunPh(p)))beep(p.kind==='work'?'work':'rest');this.draw();
   },
   reset(){this.q=[];this.i=-1;this.paused=false;this.draw()},
   cur(){return this.i>=0?this.q[this.i]:null},
@@ -688,7 +689,7 @@ function startSession(){
   if(s==='Pausa'){finish(true);return}
   save();view='sess';render();scrollTo(0,0);
   const first=nextTodo(-1,-1)||null;
-  if(S.active.items.length&&first){const n=nextTxt(first);T.run([{kind:'work',dir:'up',label:n.label,sub:n.sub}])}
+  if(S.active.items.length&&first&&!(S.active.items[first.i]&&S.active.items[first.i].grp==='Corsa')){const n=nextTxt(first);T.run([{kind:'work',dir:'up',label:n.label,sub:n.sub}])}
   else T.reset();
 }
 function finish(rest){
@@ -717,7 +718,7 @@ function runBoxes(g,km,mn){
   const k=nF(km),m=nF(mn),ok=k>0&&m>0;
   const bx=(f,l,v,im)=>'<label>'+l+'<input class="in" data-rf="'+f+'" inputmode="'+im+'" value="'+esc(v)+'" placeholder="—"></label>';
   return '<div class="fields rgrp" data-rg="'+g+'">'+bx('min','Tempo (min)',mn==null?'':mn,'decimal')+bx('km','Distanza (km)',km==null?'':km,'decimal')
-   +bx('pace','Ritmo (min/km)',ok?pcT(m/k):'','decimal')+bx('spd','Velocità (km/h)',ok?(k/(m/60)).toFixed(1).replace('.',','):'','decimal')+(g[0]==='l'?'':'<button class="btn warn" data-rreset="'+g+'" style="grid-column:1/-1">Azzera dati</button>')+'</div>';
+   +bx('pace','Ritmo medio (min/km)',ok?pcT(m/k):'','decimal')+bx('spd','Velocità media (km/h)',ok?(k/(m/60)).toFixed(1).replace('.',','):'','decimal')+(g[0]==='l'?'':'<button class="btn warn" data-rreset="'+g+'" style="grid-column:1/-1">Azzera dati</button>')+'</div>';
 }
 const RGO={};
 $('#view').addEventListener('click',e=>{
@@ -952,9 +953,6 @@ function calDetail(){
     }
     h+='</div>';
   });
-  if(!es.length&&calSel<dstr()){
-    h+='<p class="mut" style="margin:4px 0 8px">Nessuna sessione.</p>';
-  }
   return h+'</div>';
 }
 function ini(s){
@@ -1103,7 +1101,8 @@ function atlCard(it,i){
       h+=runBoxes('i'+i,it.rk,it.rm);
     }else h+='<div class="meta">'+fmt(it.d*1000)+' di lavoro'+(it.km?' \u00b7 '+esc(it.km)+' km':'')+'</div>'+blk;
   }else if(it.t==='i'){
-    h+=atView({s:it.rounds,w:it.w,r:it.r})+'<div class="ar"><button class="btn pri" data-act="runi" data-i="'+i+'">Avvia cronometro</button><button class="ck'+(it.done?' on':'')+'" data-act="blk" data-i="'+i+'" aria-label="Segna fatto">✓</button></div>';
+    h=h.replace(/<div class="mu">.*?<\/h3>$/,'<div class="vh"><span class="mut"'+(mcol('Atletica')?' style="color:'+mcol('Atletica')+'"':'')+'>'+esc(it.grp)+'</span></div><div class="vn">'+esc(it.n)+'</div>');
+    h+='<div class="srl">'+setsView({m:'Atletica',s:it.rounds,w:it.w,r:it.r})+'</div><div class="ar"><button class="btn pri" data-act="runi" data-i="'+i+'">Avvia cronometro</button><button class="ck'+(it.done?' on':'')+'" data-act="blk" data-i="'+i+'" aria-label="Segna fatto">✓</button></div>';
   }else if(it.t==='s'){
     h+=atView({s:it.sets.length,w:it.w||0,r:it.r||0});
     it.sets.forEach((s,j)=>{h+='<div class="set simple'+(s.done?' done':'')+'"><span>Giro '+(j+1)+'</span><button class="ck" data-act="ck" data-i="'+i+'" data-j="'+j+'" aria-label="Giro '+(j+1)+' fatto">✓</button></div>'});
@@ -1209,8 +1208,8 @@ function vHist(){
   const rp=[...runs].filter(e=>e.run.km>0&&e.run.min>0).sort((x,y)=>x.ts-y.ts);
   const paceF=v=>{v=-v;let m=Math.floor(v),s=Math.round((v-m)*60);if(s===60){m++;s=0}return m+'′ '+pad(s)+'″'};
   h+='<h2 class="sec">Progressione corsa</h2><section class="card">'
-   +'<div class="tw"><table><tr><th>Giorno</th><th>Ritmo</th><th>Km</th><th>Durata</th></tr>'
-   +runs.map(e=>'<tr><td>'+dshort(e.d)+'</td><td>'+esc(e.run.pace||'—')+'</td><td>'+(e.run.km||'—')+'</td><td>'+e.run.min+' min</td></tr>').join('')+'</table></div></section>';
+   +'<div class="tw"><table><tr><th>Giorno</th><th>Tempo</th><th>Distanza</th><th>Ritmo</th><th>Velocità</th></tr>'
+   +runs.map(e=>'<tr><td>'+dshort(e.d)+'</td><td>'+e.run.min+'′</td><td>'+(e.run.km?e.run.km+' KM':'—')+'</td><td>'+esc(e.run.pace||'—')+'</td><td>'+(speedOf(parseFloat(e.run.km),parseFloat(e.run.min)).replace(' km/h',' kmh')||'—')+'</td></tr>').join('')+'</table></div></section>';
   return h+vBody()+weekSummary();
 }
 function buildCsv(){
@@ -1754,7 +1753,7 @@ $('#view').addEventListener('click',e=>{
     const bd=B();bd.w=bd.w.filter(x=>x.d!==d);bd.w.push({d,kg});save();render();toast('Peso salvato');
   }
   else if(act==='sch-star'){const id=b.dataset.id;if(S.cur!==id||!curSch()){S.cur=id;const L=members(id);if(L.length){const k=SEQ.indexOf(L[0]);if(k>=0)S.seq=S.nxt=k}save();toast('Scheda corrente: '+(S.schede.find(x=>x.id===id)||{n:''}).n)}render()}
-  else if(act==='sch-open'){confirmEdit();schEd=false;schOpen=b.dataset.id;render();window.scrollTo(0,0)}
+  else if(act==='sch-open'){confirmEdit();schEd=false;planOpen='';schOpen=b.dataset.id;render();window.scrollTo(0,0)}
   else if(act==='sch-back'){confirmEdit();schEd=false;schOpen=null;render();window.scrollTo(0,0)}
   else if(act==='sch-new'){
     let n=1,name;do{name='Nuova scheda'+(n>1?' '+n:'');n++}while(S.schede.some(x=>x.n===name));
