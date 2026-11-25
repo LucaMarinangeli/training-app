@@ -1075,7 +1075,7 @@ function vStr(){
   L.forEach((x,k)=>{
     if(strEd){h+=(k===0?'<div id="strl">':'')+'<div class="wrow" data-ix="'+k+'"><button class="dg" data-sdrag="1" aria-label="Trascina per spostare">≡</button><span class="wn">'+esc(x.n)+'</span><span class="mut">'+x.d+'″</span></div>'+(k===L.length-1?'</div>':'');return}
     h+='<section class="card"><button data-act="str-el" data-i="'+k+'" style="all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;cursor:pointer"><b style="text-transform:uppercase">'+esc(x.n)+'</b><span class="mut">'+x.d+'″</span></button>';
-    if(strOpen===k)h+='<div class="seq fit" style="margin-top:10px">'+[30,45,60].map(d=>'<button class="chip'+(x.d===d?' cur':'')+'" data-act="str-d" data-i="'+k+'" data-d="'+d+'">'+d+'″</button>').join('')+'</div>';
+    if(strOpen===k)h+='<div class="seq fit" style="margin-top:10px">'+[3,30,45,60].map(d=>'<button class="chip'+(x.d===d?' cur':'')+'" data-act="str-d" data-i="'+k+'" data-d="'+d+'">'+d+'″</button>').join('')+'</div>';
     h+='</section>';
   });
   if(strAdd&&!strEd)h+='<section class="card"><input class="in" id="stradd" maxlength="40" placeholder="Nome esercizio" style="width:100%;margin:0 0 10px"><button class="btn pri" data-act="str-addok" style="width:100%">Salva</button></section>';
