@@ -228,7 +228,7 @@ a{color:var(--blue)}
 .cw{text-align:center;font:600 11px var(--body);color:var(--mut);letter-spacing:.1em}
 .cd{min-height:56px;border-radius:10px;border:1px solid var(--line);background:var(--surf2);color:var(--mut);font:600 15px var(--body);display:grid;place-items:center;padding:0;min-width:0}
 .vol{display:grid;grid-template-columns:70px 1fr 48px;align-items:center;gap:10px;margin:10px 0;font:600 14px var(--body)}.vol input{width:100%;accent-color:var(--blue)}.vol b{text-align:right;font-size:13px}
-.cd .ci{display:block;font:700 8px/1.1 var(--body);font-style:normal;letter-spacing:0;margin-top:2px;opacity:.9;max-width:100%;overflow-wrap:anywhere;text-align:center}
+.cd .ci{display:block;font:700 8px/1.1 var(--body);font-style:normal;letter-spacing:0;margin-top:2px;opacity:.9;max-width:100%;overflow-wrap:normal;word-break:normal;text-align:center;width:min-content;margin-left:auto;margin-right:auto}
 .cd.ok{background:var(--work);border-color:var(--work);color:#04170c}
 .cd.ko{background:var(--rest);border-color:var(--rest);color:#fff}
 .cd.rs{background:var(--surf);border-style:dashed}
@@ -373,7 +373,7 @@ details.card .ib{width:34px;height:34px}details.card .ib svg{width:17px;height:1
 summary,.schc,.chip,.wrow{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 body,body *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select{-webkit-user-select:text;user-select:text}
-.vn{color:var(--mut)!important}
+.vn{color:var(--txt)!important}
 .prc{-webkit-text-size-adjust:100%;text-size-adjust:100%}.prc td{font-size:min(10px,2.55vw)!important}.prc th{font-size:min(8.5px,2.2vw)!important}h2.sec.prog{white-space:nowrap}
 </style>
 
@@ -935,7 +935,7 @@ function vBody(){
 }
 
 const sessSubAuto=s=>{const w=S.wi;S.wi=null;try{return sessSub(s)}finally{S.wi=w}};
-const descOf=s=>(S.wi&&S.wi[s])||'';
+const descOf=s=>sessSub(s)||'';
 const sessSub=s=>{
   {const w=S.wi&&S.wi[s];if(w)return w}
   if(s==='Lower'||s==='Atletica')return '';
@@ -1153,7 +1153,9 @@ function strengthCard(it,i){
 function atlCard(it,i){
   const done=isDone(it);
   const blk='<div class="set simple'+(it.done?' done':'')+'"><span>'+(it.t==='n'?'Fatto':'Completato')+'</span><button class="ck" data-act="blk" data-i="'+i+'" aria-label="Segna fatto">✓</button></div>';
-  let h='<section class="card'+(done?' complete':'')+'"><div class="mu">'+esc(it.grp)+'</div><h3>'+esc(it.n)+'</h3>';
+  const rk=it.t==='i'?'runi':it.t==='s'?'runs':(it.t==='t'&&it.grp!=='Corsa')?'runt':'';
+  const tb=rk?'<button data-act="'+rk+'" data-i="'+i+'" style="flex:none;width:auto;margin:0;padding:8px 14px;border:0;border-radius:12px;background:var(--txt);color:var(--bg);font:700 13px var(--disp);letter-spacing:.1em;cursor:pointer">AVVIA TIMER</button>':'';
+  let h='<section class="card'+(done?' complete':'')+'"><div class="mu">'+esc(it.grp)+'</div><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h3 style="margin:0;min-width:0">'+esc(it.n)+'</h3>'+tb+'</div>';
   if(it.t==='t'){
     if(it.grp==='Corsa'){
       h+=runBoxes('i'+i,it.rk,it.rm);
