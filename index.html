@@ -374,6 +374,7 @@ summary,.schc,.chip,.wrow{-webkit-user-select:none;user-select:none;-webkit-touc
 body,body *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select{-webkit-user-select:text;user-select:text}
 .vn{color:var(--mut)!important}
+.prc{-webkit-text-size-adjust:100%;text-size-adjust:100%}.prc td{font-size:min(10px,2.55vw)!important}.prc th{font-size:min(8.5px,2.2vw)!important}h2.sec.prog{white-space:nowrap}
 </style>
 
 <nav class="tabs" id="tabs">
@@ -382,7 +383,6 @@ input,textarea,select{-webkit-user-select:text;user-select:text}
   <button data-v="hist" aria-label="Storico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></button>
   <button data-v="set" aria-label="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
 </nav>
-<div id="ver" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);right:8px;z-index:50;font:600 10px system-ui,sans-serif;letter-spacing:.06em;color:#8a8f98;pointer-events:none">V 23/11 20:43</div>
 <button id="ttop" hidden></button>
 <main id="view"></main>
 
@@ -1290,7 +1290,7 @@ function vHist(){
   const runs=logs.filter(e=>e.run);
   const rp=[...runs].filter(e=>e.run.km>0&&e.run.min>0).sort((x,y)=>x.ts-y.ts);
   const paceF=v=>{v=-v;let m=Math.floor(v),s=Math.round((v-m)*60);if(s===60){m++;s=0}return m+'′ '+pad(s)+'″'};
-  h+='<h2 class="sec">Progressione corsa</h2><section class="card">'
+  h+='<h2 class="sec prog" style="font-size:min(13px,3.3vw)">Progressione corsa</h2><section class="card">'
    +'<div class="tw"><table class="prc"><tr><th>Giorno</th><th>Tempo</th><th>Distanza</th><th>Ritmo</th><th>Velocità</th></tr>'
    +runs.map(e=>'<tr><td>'+dshort(e.d)+'</td><td>'+e.run.min+'′</td><td>'+(e.run.km?e.run.km+' KM':'—')+'</td><td>'+esc(e.run.pace||'—')+'</td><td>'+(speedOf(parseFloat(e.run.km),parseFloat(e.run.min)).replace(' km/h',' kmh')||'—')+'</td></tr>').join('')+'</table></div></section>';
   return h+vBody()+weekSummary();
