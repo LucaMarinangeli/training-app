@@ -1548,7 +1548,7 @@ function vPlan(){
   if(schEd){h+='<button class="wrow" data-act="wk-new" style="width:100%;text-align:left;color:var(--txt);cursor:pointer;margin:-14px 0 4px;min-height:50px"><span style="display:grid;place-items:center;width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--surf2);color:var(--mut);font-size:20px">+</span><span class="wn">Nuova sessione</span></button>';
   const o=sortNames(SEQ.filter(s=>s!=='Pausa'&&!inSch(s,cur.id)));
     if(o.length)h+='<h2 class="sec">Sessioni esistenti</h2><div class="seq fit">'+o.map(s=>'<button class="chip" data-act="wk-add" data-s="'+esc(s)+'">'+disp(s)+'</button>').join('')+'</div>'}
-  if(schEd)h+='<div style="margin-top:14px"><button class="btn pri" data-act="sch-ed" style="width:100%">FINE</button></div>';
+  if(schEd)h+='<div class="row2" style="margin-top:14px">'+(cur.id==='__w'?'':'<button class="btn" data-act="sch-dup" data-id="'+esc(cur.id)+'">DUPLICA</button>')+'<button class="btn pri" data-act="sch-ed">FINE</button></div>';
   else if(editSess){}
   else h+='<div class="row2" style="margin-top:14px"><button class="btn" data-act="pdf-sch" data-id="'+esc(cur.id)+'">ESPORTA SCHEDA</button><button class="btn" data-act="sch-ed">MODIFICA SCHEDA</button></div>';
   return h+'<div style="height:140px"></div>';
@@ -1783,7 +1783,7 @@ function schedaLines(cur,only){
 let lpT=null,lpX=0,lpY=0,lpFired=false;
 function fadeOut(el,cb){
   if(!el){cb();return}
-  el.style.pointerEvents='none';el.style.transition='opacity 1s ease, transform 1s ease';
+  el.style.pointerEvents='none';el.style.transition='opacity .5s ease, transform .5s ease';
   void el.offsetWidth;el.style.opacity='0';el.style.transform='scale(.95)';
   setTimeout(()=>{
     const pc=el.parentElement?getComputedStyle(el.parentElement):null,gp=pc&&/flex|grid/.test(pc.display)?(parseFloat(pc.rowGap)||0):0;
@@ -1791,7 +1791,7 @@ function fadeOut(el,cb){
     el.style.height=el.getBoundingClientRect().height+'px';void el.offsetWidth;el.style.transition='height .6s cubic-bezier(.4,0,.2,1), margin .6s cubic-bezier(.4,0,.2,1), padding .6s cubic-bezier(.4,0,.2,1), border-width .6s cubic-bezier(.4,0,.2,1)';void el.offsetWidth;
     el.style.height='0px';el.style.marginTop='0px';el.style.marginBottom=(gp?'-'+gp+'px':'0px');el.style.paddingTop='0px';el.style.paddingBottom='0px';el.style.borderWidth='0px';
     setTimeout(cb,630);
-  },1000);
+  },500);
 }
 const _chSeen=new Set();
 let _chIO=null;
@@ -1955,6 +1955,22 @@ $('#view').addEventListener('click',e=>{
     let n=1,name;do{name='Nuova scheda'+(n>1?' '+n:'');n++}while(S.schede.some(x=>x.n===name));
     const id='s'+Date.now().toString(36);S.schede.push({id,n:name});schOpen=id;schEd=true;save();render();window.scrollTo(0,0);
     setTimeout(()=>{const r=document.querySelector('[data-sn]');if(r){r.focus();r.select()}},60);
+  }
+  else if(act==='sch-dup'){
+    const src=S.schede.find(x=>x.id===b.dataset.id);if(!src)return;confirmEdit();
+    let k=1,name;do{name=src.n.slice(0,22)+' (copia'+(k>1?' '+k:'')+')';k++}while(S.schede.some(x=>x.n===name));
+    const id='s'+Date.now().toString(36);const mem=members(src.id),nl=[];
+    mem.forEach(w=>{
+      if(!PLAN[w]||w==='Atletica'){nl.push(w);return}
+      let n=0,nn;do{nn=w.replace(/\u200b+$/,'')+'\u200b'.repeat(n+1);n++}while(SEQ.includes(nn)||nl.includes(nn));
+      const cp=o=>JSON.parse(JSON.stringify(o));
+      S.extra=(S.extra||[]).concat(nn);S.plan[nn]=cp(PLAN[w]);PLAN[nn]=S.plan[nn];
+      if(!S.names)S.names={};S.names[nn]=NAMES[w]||w;
+      if(S.wn&&S.wn[w]!=null)S.wn[nn]=cp(S.wn[w]);if(S.wi&&S.wi[w]!=null)S.wi[nn]=cp(S.wi[w]);
+      SEQ.push(nn);NAMES[nn]=S.names[nn];nl.push(nn);
+    });
+    S.schede.push({id,n:name});S.sw[id]=nl;applyExtra();
+    schOpen=id;schEd=true;save();render();window.scrollTo(0,0);toast('Scheda duplicata');
   }
   else if(act==='sch-del'){const id=b.dataset.id;if(arm('sch'+id,b,'Sicuro?')){
     armed=null;confirmEdit();
