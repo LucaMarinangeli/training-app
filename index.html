@@ -312,7 +312,7 @@ details.card .ib{width:34px;height:34px}details.card .ib svg{width:17px;height:1
 .pe select.ie{-webkit-appearance:none;appearance:none;background-image:none;font-size:10px;font-weight:700;text-align:left;text-align-last:left;padding:3px 6px;height:auto;width:auto;max-width:72px;text-transform:uppercase;border:1px solid var(--line);border-radius:8px;background-color:var(--surf2);margin-bottom:4px}
 .pe select.ie[data-ed=m]{max-width:none}
 .pe select.ie[data-ed=ty]{width:96px;min-width:96px}
-.pe select.ie[data-ed=ty],.pe select.ie[data-ed=m]{max-width:none;height:34px;padding:0 8px;line-height:34px;font-size:11px}
+.pe select.ie[data-ed=ty],.pe select.ie[data-ed=m],.pe select.ie[data-ed=ct]{max-width:none;height:34px;padding:0 8px;line-height:34px;font-size:11px}
 .pe .gi{font-size:10px;text-align:left;width:15ch;text-transform:uppercase}
 .pe td{vertical-align:top}
 .mini{display:flex;gap:4px;margin-top:4px}.mini button{width:26px;height:22px;border-radius:6px;border:1px solid var(--line);background:var(--surf2);color:var(--mut);font-size:10px;padding:0}
@@ -676,7 +676,7 @@ function syncPlan(a){
 function runTarget(){if(S.runMin>0)return S.runMin;return RUN_TARGETS[Math.min(S.log.filter(e=>e.run).length,RUN_TARGETS.length-1)]}
 function buildItems(s){
   if(PLAN[s])return PLAN[s].map(p=>{
-    if(p.m==='Corsa')return{t:'t',n:p.e,grp:p.m,d:p.d||0,km:p.km||'',done:false,sets:[]};
+    if(p.m==='Corsa')return{t:'t',n:p.e,grp:p.m,d:p.d||0,km:p.km||'',done:false,sets:[],ct:ctOf(p.ct)};
     if(p.m==='Atletica')return{t:'i',n:p.e,grp:p.m,rounds:Math.max(1,p.s||1),w:p.w||0,r:p.r||0,done:false,sets:[]};
     const l=lastFor(s,p.e);
     const mx=(()=>{const m=String(p.rg||'').match(/(\d+)(?:\s*-\s*(\d+))?/);return m?+(m[2]||m[1]):0})(),up=!!(l&&l.log&&mx>0&&l.reps.length&&l.reps.every(v=>parseFloat(String(v).replace(',','.'))>=mx));
@@ -723,7 +723,7 @@ function startSession(){
   S.active={s,start:Date.now(),items:buildItems(s),cur:0};
   if(addFor){S.active.d=addFor.d;S.active.add=true;addFor=null}
   if(pastDay){S.active.d=ydStr();pastDay=false}
-  if(s==='Corsa lunga')S.active.run={km:'',min:String(runTarget())};
+  if(s==='Corsa lunga')S.active.run={km:'',min:String(runTarget()),ty:rty()};
   if(s==='Pausa'){finish(true);return}
   save();view='sess';render();scrollTo(0,0);
   try{[...document.querySelectorAll('#view > section.card')].slice(0,12).forEach((c,k)=>c.animate([{opacity:0,transform:'translateY(24px)'},{opacity:1,transform:'none'}],{duration:480,delay:k*70,easing:'cubic-bezier(.2,.8,.2,1)',fill:'backwards'}))}catch(_){}
@@ -737,9 +737,9 @@ function finish(rest){
   else if(a.s==='Atletica')ex=a.items.filter(x=>x.t==='s'?x.sets.some(s=>s.done):x.done).map(x=>({n:x.n,c:x.t==='s'?x.sets.filter(s=>s.done).length:1}));
   else if(a.s==='Corsa lunga'){
     const km=parseFloat(String(a.run.km).replace(',','.')),mn=parseFloat(String(a.run.min).replace(',','.'));
-    run={km:isNaN(km)?0:km,min:isNaN(mn)?0:mn,pace:paceOf(km,mn)};
+    run={km:isNaN(km)?0:km,min:isNaN(mn)?0:mn,pace:paceOf(km,mn),ty:a.run.ty||rty()};
   }
-  if(PLAN[a.s]){const ci=a.items.find(x=>x.t==='t'&&x.grp==='Corsa'&&x.done);if(ci){const km=parseFloat(String(ci.rk).replace(',','.')),mn=parseFloat(String(ci.rm).replace(',','.'));run={km:km,min:mn,pace:paceOf(km,mn)}}}
+  if(PLAN[a.s]){const ci=a.items.find(x=>x.t==='t'&&x.grp==='Corsa'&&x.done);if(ci){const km=parseFloat(String(ci.rk).replace(',','.')),mn=parseFloat(String(ci.rm).replace(',','.'));run={km:km,min:mn,pace:paceOf(km,mn),ty:ctOf(ci.ct)}}}
   syncPlan(a);
   const past=a.d&&a.d!==dstr();
   const e={id:'l'+Date.now(),ts:past?Date.parse(a.d+'T12:00:00')+Date.now()%1000:Date.now(),d:a.d||dstr(),s:a.s,dur:rest?0:(past?(sessMin(a.s)||0):Math.round((Date.now()-a.start)/60000)),ex};
@@ -1155,7 +1155,7 @@ function atlCard(it,i){
   const blk='<div class="set simple'+(it.done?' done':'')+'"><span>'+(it.t==='n'?'Fatto':'Completato')+'</span><button class="ck" data-act="blk" data-i="'+i+'" aria-label="Segna fatto">✓</button></div>';
   const rk=it.t==='i'?'runi':it.t==='s'?'runs':(it.t==='t'&&it.grp!=='Corsa')?'runt':'';
   const tb=rk?'<button data-act="'+rk+'" data-i="'+i+'" style="flex:none;width:auto;margin:0;padding:8px 14px;border:0;border-radius:12px;background:var(--txt);color:var(--bg);font:700 13px var(--disp);letter-spacing:.1em;cursor:pointer">AVVIA TIMER</button>':'';
-  let h='<section class="card'+(done?' complete':'')+'"><div class="mu">'+esc(it.grp)+'</div><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h3 style="margin:0;min-width:0">'+esc(it.n)+'</h3>'+tb+'</div>';
+  let h='<section class="card'+(done?' complete':'')+'"><div class="mu">'+esc(it.grp)+(it.grp==='Corsa'?' \u00b7 '+ctOf(it.ct):'')+'</div><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><h3 style="margin:0;min-width:0">'+esc(it.n)+'</h3>'+tb+'</div>';
   if(it.t==='t'){
     if(it.grp==='Corsa'){
       h+=runBoxes('i'+i,it.rk,it.rm);
@@ -1187,7 +1187,7 @@ function vSess(){
   else if(a.s==='Atletica')a.items.forEach((it,i)=>{h+=atlCard(it,i)});
   else if(a.s==='Corsa lunga'){
     const km=parseFloat(String(a.run.km).replace(',','.')),mn=parseFloat(String(a.run.min).replace(',','.'));
-    h+='<section class="card"><div class="mu">Corsa</div><h3>45 min a &lt;150 BPM</h3><div class="meta">Obiettivo di oggi: '+runTarget()+' min</div>'
+    h+='<section class="card"><div class="mu">Corsa</div><h3>45 min a &lt;150 BPM</h3><div class="meta">'+esc(a.run.ty||rty())+' · Obiettivo di oggi: '+runTarget()+' min</div>'
      
      +runBoxes('a',a.run.km,a.run.min)+'</section>';
   }
@@ -1258,7 +1258,7 @@ function lineSvg(pts,f,lab,hh){
   return s+'</svg><div class="cpinfo"></div>';
 }
 function runCharts(){
-  const rs=S.log.filter(e=>e.run&&e.run.km>0).sort((a,b)=>a.ts-b.ts);
+  const rs=S.log.filter(e=>e.run&&(!e.run.ty||e.run.ty==='Aerobica')&&e.run.km>0).sort((a,b)=>a.ts-b.ts);
   const pace=v=>{let m=Math.floor(v),s=Math.round((v-m)*60);if(s===60){m++;s=0}return m+'′ '+pad(s)+'″'};
   return'<h2 class="sec">Progressi · corsa</h2><section class="card"><div class="eyebrow">Ritmo medio (/km)</div>'
    +lineSvg(rs.map(e=>({d:e.d,v:e.run.min/e.run.km})),pace,'Ritmo nel tempo')
@@ -1289,10 +1289,10 @@ function vHist(){
     }
   }
   h+='</section>';
-  const runs=logs.filter(e=>e.run);
+  const runs=logs.filter(e=>e.run&&(!e.run.ty||e.run.ty==='Aerobica'));
   const rp=[...runs].filter(e=>e.run.km>0&&e.run.min>0).sort((x,y)=>x.ts-y.ts);
   const paceF=v=>{v=-v;let m=Math.floor(v),s=Math.round((v-m)*60);if(s===60){m++;s=0}return m+'′ '+pad(s)+'″'};
-  h+='<h2 class="sec prog" style="font-size:min(13px,3.3vw)">Progressione corsa</h2><section class="card">'
+  h+='<h2 class="sec prog" style="font-size:min(13px,2.9vw)">Progressione corsa aerobica</h2><section class="card">'
    +'<div class="tw"><table class="prc"><tr><th>Giorno</th><th>Tempo</th><th>Distanza</th><th>Ritmo</th><th>Velocità</th></tr>'
    +runs.map(e=>'<tr><td>'+dshort(e.d)+'</td><td>'+e.run.min+'′</td><td>'+(e.run.km?e.run.km+' KM':'—')+'</td><td>'+esc(e.run.pace||'—')+'</td><td>'+(speedOf(parseFloat(e.run.km),parseFloat(e.run.min)).replace(' km/h',' kmh')||'—')+'</td></tr>').join('')+'</table></div></section>';
   return h+vBody()+weekSummary();
@@ -1373,6 +1373,7 @@ function commitEdit(){
 }
 const GRUPPI=['Spalle','Petto','Dorso','Bicipiti','Tricipiti','Addome','Gambe','Corsa','Atletica'];
 const GR_PESI=GRUPPI.slice(0,7);
+const CTY=['Aerobica','Scarico','1 km','5 km','10 km'],ctOf=v=>CTY.includes(v)?v:'Aerobica';
 const tyOf=p=>p.m==='Corsa'?'Corsa':p.m==='Atletica'?'Atletica':(p.m?'Pesi':(p.ty==='Pesi'?'Pesi':''));
 const tyOpts=c=>(c?'':'<option value="" selected>Tipologia</option>')+['Pesi','Corsa','Atletica'].map(g=>'<option'+(g===c?' selected':'')+'>'+g+'</option>').join('');
 function groupOpts(cur){
@@ -1415,8 +1416,9 @@ function atlForm(){
 }
 function runPlan(){
   const m=runTarget(),ed=editSess==='Corsa lunga';
-  return'<div class="tw"><table class="'+(ed?'pe':'')+'"><tr><th>Esercizio</th><th style="text-align:center;width:40%">Tempo</th></tr><tr><td>Corsa</td><td style="text-align:center;white-space:nowrap">'+(ed?'<input class="ie" data-rm="1" inputmode="numeric" value="'+m+'" style="width:3ch"> min':m+' min')+'</td></tr></table></div>';
+  return'<div class="tw"><table class="'+(ed?'pe':'')+'"><tr><th>Esercizio</th><th style="text-align:center;width:40%">Tempo</th></tr><tr><td style="vertical-align:middle">Corsa</td><td style="text-align:center;white-space:nowrap">'+(ed?'<input class="ie" data-rm="1" inputmode="numeric" value="'+m+'" style="width:3ch"> min':m+' min')+'</td></tr><tr><td style="vertical-align:middle">Tipo</td><td style="text-align:center;white-space:nowrap">'+(ed?'<select class="ie" data-rt="1" aria-label="Tipo corsa" style="width:auto;max-width:100%">'+CTY.map(g=>'<option'+(rty()===g?' selected':'')+'>'+g+'</option>').join('')+'</select>':rty())+'</td></tr></table></div>';
 }
+const rty=()=>ctOf(S.runTy);
 const EDB='';
 const MINI=i=>'';
 const kgSet=(p,k)=>{const v=p.ks&&p.ks[k];return v!=null&&v!==''?v:(p.kg||'')};
@@ -1467,7 +1469,7 @@ function editRow0(p,i){
     const ty=tyOf(p);
     const head='<tr><td><span style="display:flex;align-items:center;gap:4px;min-height:40px"><select class="ie gs" data-ed="ty" data-i="'+i+'">'+tyOpts(ty)+'</select>'+(ty==='Pesi'?' <select class="ie gs" data-ed="m" data-i="'+i+'" style="'+col+'">'+groupOpts(p.m)+'</select>':'')+'</span><br><span class="ie nm" contenteditable="true" data-ed="e" data-i="'+i+'">'+esc(p.e)+'</span>'+MINI(i)+'</td>';
     if(ty===''&&!p.e)return '<tr><td colspan="4"><span style="display:flex;align-items:center;gap:4px;min-height:40px"><select class="ie gs" data-ed="ty" data-i="'+i+'">'+tyOpts(ty)+'</select></span></td></tr>';
-    if(ty==='Corsa')return '<tr><td colspan="4" class="ex"><div class="exh"><select class="ie gs" data-ed="ty" data-i="'+i+'">'+tyOpts(ty)+'</select></div><div class="exn"><span class="ie nm" contenteditable="true" data-ed="e" data-i="'+i+'">'+esc(p.e)+'</span></div></td></tr>';
+    if(ty==='Corsa')return '<tr><td colspan="4" class="ex"><div class="exh"><select class="ie gs" data-ed="ty" data-i="'+i+'">'+tyOpts(ty)+'</select><select class="ie gs" data-ed="ct" data-i="'+i+'">'+CTY.map(g=>'<option'+(ctOf(p.ct)===g?' selected':'')+'>'+g+'</option>').join('')+'</select></div><div class="exn"><span class="ie nm" contenteditable="true" data-ed="e" data-i="'+i+'">'+esc(p.e)+'</span></div></td></tr>';
     if(ty==='Atletica')return exRow(p,i,ty,col);
     return exRow(p,i,ty,col);
 }
@@ -1480,7 +1482,7 @@ function noteBlock(s,ed){
 function planTable(s,ed){
   const rows=PLAN[s].map((p,i)=>{
     const col=mcol(p.m)?'color:'+mcol(p.m):'';
-    if(!ed&&p.m==='Corsa')return'<tr><td colspan="4" class="ex"><div class="vh"><span class="mut" style="'+col+'">'+esc(p.m)+'</span></div><div class="vn">'+esc(p.e)+'</div></td></tr>';
+    if(!ed&&p.m==='Corsa')return'<tr><td colspan="4" class="ex"><div class="vh"><span class="mut" style="'+col+'">'+esc(p.m)+'</span><span class="mut"> \u00b7 '+ctOf(p.ct)+'</span></div><div class="vn">'+esc(p.e)+'</div></td></tr>';
     if(!ed&&p.m==='Atletica')return'<tr><td colspan="4" class="ex"><div class="vh"><span class="mut" style="'+col+'">'+esc(p.m)+'</span></div><div class="vn">'+esc(p.e)+'</div><div class="srl">'+setsView(p)+'</div></td></tr>';
     if(!ed)return'<tr><td colspan="4" class="ex"><div class="vh"><span class="mut">Pesi \u00b7 </span><span class="mut" style="'+col+'">'+esc(p.m)+'</span></div><div class="vn">'+esc(p.e)+'</div><div class="srl">'+setsView(p)+'</div></td></tr>';
     return editRow(p,i);
@@ -1537,7 +1539,7 @@ function vPlan(){
   }
   else{h+='<div class="sblk">';members(cur.id).filter(x=>!soloEd||x===soloEd).forEach(s=>{
     const ed=editSess===s,can=PLAN[s]||s==='Atletica'||s==='Corsa lunga';
-    h+='<details class="card pl" data-s="'+esc(s)+'"'+(ed||planOpen===s?' open':'')+'><summary>'+(ed?'<span style="flex:1;display:flex;gap:8px;margin-right:0;min-width:0"><input class="in" data-rn="1" value="'+esc(NAMES[s]||s)+'" maxlength="30" placeholder="Nome sessione" style="flex:1;min-width:0;height:36px;font-size:15px;text-align:left">'+'</span>':'<span>'+disp(s)+estSpan(s)+'</span>')+(!ed&&can?'<button class="ib sumpen" data-act="'+(s==='Corsa lunga'?'run-ed':'ed-start')+'" data-s="'+esc(s)+'" aria-label="Modifica sessione">'+ICP+'</button>':'')+'</summary>';
+    h+='<details class="card pl" data-s="'+esc(s)+'"'+(ed||planOpen===s?' open':'')+'><summary>'+(ed?'<span style="flex:1;display:flex;gap:8px;margin-right:0;min-width:0"><input class="in" data-rn="1" value="'+esc(NAMES[s]||s)+'" maxlength="30" placeholder="Nome sessione" style="flex:1;min-width:0;height:36px;font-size:15px;text-align:left">'+'</span>':'<span style="min-width:0">'+disp(s)+(sessSub(s)?' <span style="color:var(--mut);font-weight:400;font-size:.78em;letter-spacing:.02em;margin-left:6px">'+esc(sessSub(s))+'</span>':'')+'</span>')+(!ed&&can?'<button class="ib sumpen" data-act="'+(s==='Corsa lunga'?'run-ed':'ed-start')+'" data-s="'+esc(s)+'" aria-label="Modifica sessione">'+ICP+'</button>':'')+'</summary>';
     if(ed)h+=infoBlock(s);
     if(PLAN[s])h+=planTable(s,ed);
     else if(s==='Corsa lunga')h+=runPlan();
@@ -1934,7 +1936,7 @@ $('#view').addEventListener('click',e=>{
   else if(act==='runmic'&&a){startRunDict()}
   else if(act==='runc'&&a){
     ac();wake();const mn=parseFloat(String(a.run.min).replace(',','.'))||runTarget();
-    T.run([{kind:'work',dir:'down',dur:mn*60000,label:'Corsa',sub:'Resta sotto i 150 BPM'}]);
+    T.run([{kind:'work',dir:'down',dur:mn*60000,label:'Corsa',sub:(a.run.ty||rty())+' · resta sotto i 150 BPM'}]);
   }
   else if(act==='addw'){if(a){toast('Hai già una seduta in corso');return}calAdd=false;addFor={s:b.dataset.s,d:b.dataset.d};startSession()}
   else if(act==='edlog'){calEd=calEd===b.dataset.id?'':b.dataset.id;armed=null;render()}
@@ -2113,6 +2115,7 @@ $('#view').addEventListener('input',e=>{
   else if(f==='wm'||f==='ws'){const q=t.closest('.rcv').querySelectorAll('input');p.w=Math.max(0,(parseInt(q[0].value)||0)*60+(parseInt(q[1].value)||0));const sb=t.closest('.srs');if(sb)sb.querySelectorAll('.rcv').forEach(r=>{if(r!==t.closest('.rcv')){const z=r.querySelectorAll('input');z[0].value=Math.floor(p.w/60);z[1].value=pad(p.w%60)}})}
   else if(f==='km'){p.km=(String(V).match(/\d+(?:[.,]\d+)?/)||[''])[0]}
   else if(f==='ty'){const was=tyOf(p);if(V!==was){if(V==='Corsa'){if(was==='Pesi')p.gr=p.m;p.ty='';p.m='Corsa';p.d=p.d||1800}else if(V==='Atletica'){if(was==='Pesi')p.gr=p.m;p.ty='';p.m='Atletica';p.s=p.s||3;p.w=p.w||30;p.r=p.r||60}else{p.m=GR_PESI.includes(p.gr)?p.gr:'';p.ty='Pesi';if(!p.rg)p.rg='8-10'}save();render();return}}
+  else if(f==='ct'){p.ct=ctOf(V)==='Aerobica'?'':ctOf(V);save();return}
   else if(f==='m'){const k=x=>x==='Corsa'?1:x==='Atletica'?2:0,was=k(p.m);p.m=V;if(k(V)!==was){if(k(V)===1)p.d=p.d||1800;if(k(V)===2){p.s=p.s||3;p.w=p.w||30;p.r=p.r||60}save();render();return}}
   else if(f==='lr'){p.lr=(String(V).match(/\d+(?:[.,]\d+)?/g)||[]).join('+')}
   else p[f]=V;
@@ -2208,6 +2211,7 @@ $('#view').addEventListener('change',e=>{
   if(t.id==='bday'&&t.value){bodyDay=t.value;render()}
 });
 // Modifica del tempo della corsa
+$('#view').addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.rt)return;S.runTy=ctOf(t.value);if(editSess)editDirty=true;save()});
 $('#view').addEventListener('input',e=>{
   const t=e.target;if(!t.dataset.rm)return;
   const v=parseInt(t.value);S.runMin=v>0?Math.min(v,600):0;save();
